@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Doman H5</title>
+    <link href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <style>
+        .numInput {margin-top: 5px;}
+		.btnNumber{max-width:100px; max-height:100px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="divSums" calss="row">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div>
+					<label>请输入算术题，每行输入一道题</label>
+				</div>
+				<div>
+					<textarea type="text" id="txtSums" style="width: 100%; height: 120px; vertical-align: top;"></textarea>
+				</div>
+				<div>
+					<input id="cbComputeType" type="checkbox" value="1" checked="checked"/><label for="cbComputeType">顺序计算</label>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<table class="numInput">
+					<tr>
+						<td><button type="button" onclick="inputNum('7');" class="btnNumber btn btn-default">7</button></td>
+						<td><button type="button" onclick="inputNum('8');" class="btnNumber btn btn-default">8</button></td>
+						<td><button type="button" onclick="inputNum('9');" class="btnNumber btn btn-default">9</button></td>
+						<td><button type="button" onclick="inputNum('+');" class="btnNumber btn btn-default">+</button></td>
+					<tr>
+					<tr>
+						<td><button type="button" onclick="inputNum('4');" class="btnNumber btn btn-default">4</button></td>
+						<td><button type="button" onclick="inputNum('5');" class="btnNumber btn btn-default">5</button></td>
+						<td><button type="button" onclick="inputNum('6');" class="btnNumber btn btn-default">6</button></td>
+						<td><button type="button" onclick="inputNum('-');" class="btnNumber btn btn-default">-</button></td>
+					<tr>
+					<tr>
+						<td><button type="button" onclick="inputNum('1');" class="btnNumber btn btn-default">1</button></td>
+						<td><button type="button" onclick="inputNum('2');" class="btnNumber btn btn-default">2</button></td>
+						<td><button type="button" onclick="inputNum('3');" class="btnNumber btn btn-default">3</button></td>
+						<td><button type="button" onclick="inputNum('*');" class="btnNumber btn btn-default">*</button></td>
+					<tr>
+					<tr>
+						<td><button type="button" onclick="inputNum('0');" class="btnNumber btn btn-default">0</button></td>
+						<td><button type="button" onclick="inputNum('\n');" class="btnNumber btn btn-default">Ent</button></td>
+						<td><button type="button" onclick="inputNum('=');" class="btnNumber btn btn-default">=</button></td>
+						<td><button type="button" onclick="inputNum('/');" class="btnNumber btn btn-default">/</button></td>
+					<tr>
+					<tr>
+						<td colspan="2"><button type="button" onclick="inputNum('Cle');" class="btn btn-info" style="width: 100%; height: 50px; margin-top: 10px; margin-right:3px;">Cle</button></td>
+						<td colspan="2">
+							<button type="button" id="btnBegin" class="btn btn-primary" style="width: 100%; height: 50px; margin-top: 10px; margin-left:3px;">开始</button>
+						</td>
+					<tr>
+				</table>				
+			</div>
+		</div>
+    </div>
+	<!-- 添加canvas标签，并加上红色边框以便于在页面上查看 -->
+	<canvas id="myCanvas" style="display: none;">您的浏览器不支持canvas标签。
+	</canvas>
+    <script type="text/javascript">
+
+
+        //获取Canvas对象(画布)
+        var canvas = document.getElementById("myCanvas");
+
+        var sumTxtList = [];//算数列表
+        var sumTxtNum = 0;//第几个算数
+        var sumNumList = [];//算数数字列表
+        var sumNum = 0;//显示第几个数字
+        var circleRadius = 30;//实心圆半径
+        var minGap = 5;//实心圆最小间距
+        var checkTime = 0;//连续检测重叠次数
+        var checkTimeMax = 100;//连续检测重叠次数
+        var redrawTime = 0;//重新绘制图片次数
+        var redrawTimeMax = 10;//重新绘制图片次数
+
+        $(function () {
+
+            resizeLayout();
+            $(window).resize(function () {
+                resizeLayout();
+				resizeButtons();
+            })
+
+			resizeButtons();
+			
+            //简单地检测当前浏览器是否支持Canvas对象，以免在一些不支持html5的浏览器中提示语法错误
+            if (!canvas.getContext) {
+                alert("您的浏览器不支持html5，请更换浏览器");
+                return;
+            }
+
+            //算术文本框输入内容
+            $("#txtSums").keypress(function (e) {
+                if (e.charCode == 61) {
+                    inputNum("=");
+                    //阻止默认事件
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    } else {
+                        e.returnValue = false;
+                    }
+                }
+            });
+
+            //开始按钮
+            $("#btnBegin").click(function () {
+                var sumTxt = $("#txtSums").val();
+                if (sumTxt == '') {
+                    alert("请输入算术题，每行输入一道题");
+                    return;
+                }
+                sumTxtList = sumTxt.split('\n');
+				sumTxtNum = 0;
+				sumNum = 0;
+				$("#divSums").hide();
+				$("#myCanvas").show();
+                drawSum();
+            });
+
+            //画布点击事件，切换实心圆
+            $("#myCanvas").click(function () {
+                //drawSum();
+            });
+        });
+
+        //重置工作区高宽
+        function resizeLayout() {
+            var wh = $(window).height();
+            var ww = $(window).width();
+            $("body").css({ width: ww + "px", height: wh + "px" });
+            canvas.width = ww;
+            canvas.height = wh - 10;
+			
+			circleRadius = (ww < wh ? ww : wh) / 20;
+        }
+
+		//设置按钮大小
+		function resizeButtons(){
+			var ww = $(window).width();
+			var bw = (ww - 30) / 4 - 20;
+			$(".btnNumber").each(function(){
+				$(this).css({padding:0, margin:"3px"}).width(bw).height(bw);
+			});
+		}
+		
+        //输入算数
+        function inputNum(v) {
+            if (v == "Cle") {
+                sumList = [];
+                $("#txtSums").val("");
+                return;
+            } else if (v == "=") {
+                var sumTxts = $("#txtSums").val().split("\n");
+                var sumTxt = sumTxts[sumTxts.length - 1];
+                var hasEqual = sumTxt.indexOf("=") > -1;
+                if (hasEqual) {
+                    sumTxt = sumTxt.substring(0, sumTxt.length - 1);
+                }
+                var type = $("#cbComputeType").get(0).checked ? 2 : 1;
+                var sumRst = computeSum(sumTxt, type);
+                if (hasEqual) {
+                    v = sumRst;
+                } else {
+                    v = v + sumRst;
+                }
+            }
+            $("#txtSums").val($("#txtSums").val() + v);
+        }
+
+        //计算算数
+        function computeSum(sumTxt, type) {
+            if (type != undefined && type == 2) {
+                var nums = sumTxt.split(/\+|-|\*|\//);
+                var optsTemp = sumTxt.split(/\d|\./);
+                var opts = [];
+                for (var i in optsTemp) {
+                    if (optsTemp[i] != "") {
+                        opts.push(optsTemp[i]);
+                    }
+                }
+                var rst = 0;
+                for (var j = 0; j < opts.length; j++) {
+                    if (j == 0) {
+                        rst = eval(nums[j] + opts[j] + nums[j + 1]);
+                    } else {
+                        rst = eval(rst + opts[j] + nums[j + 1]);
+                    }
+                }
+                return rst;
+            } else {
+                return eval(sumTxt);
+            }
+        }
+
+        //绘制数学表达式
+        function drawSum() {
+			if (sumNum == sumNumList.length) {
+				if (sumTxtNum == sumTxtList.length) {
+					$("#myCanvas").hide();
+					$("#divSums").show();
+					sumTxtNum = 0;
+					sumTxt = "";
+					sumNumList = [];
+					sumNum = 0;
+					clearCanvas();
+					return;
+				}
+				sumNumList = [];
+				sumNum = 0;
+				sumTxt = sumTxtList[sumTxtNum++];
+				var sumNodes = sumTxt.split(/\+|-|\*|\/|=/);
+				for (var n in sumNodes) {
+					var node = sumNodes[n];
+					if (!isNaN(node)) {
+						sumNumList.push(parseInt(node));
+					}
+				}
+			}
+			clearCanvas();
+			drawSumTxt(sumTxt);
+            drawCircles(sumNumList[sumNum++]);
+			setTimeout('drawSum()',1000);
+        }
+		
+		//清屏
+		function clearCanvas(){
+            //canvas清除屏幕
+            //canvas.width = canvas.width;
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+		}
+		
+		//绘制算数文字
+		function drawSumTxt(sumTxt){
+			var ctx = canvas.getContext("2d");
+			ctx.font = "27px Courier New";
+			ctx.fillStyle = "blue";
+			ctx.fillText(sumTxt, 10, 20);
+		}
+
+        //绘制num个实心圆
+        function drawCircles(num) {
+            //生成实心圆随机位置
+            var circleList = generateRandomPoistions(num);
+            //绘制实心圆
+            for (var c in circleList) {
+                var cir = circleList[c];
+                drawCircle(cir.cl, cir.ct);
+            }
+        }
+
+        //生成实心圆随机位置
+        function generateRandomPoistions(num) {
+            checkTime = 0;
+            var circleList = [];//实心圆列表
+            var oval = [canvas.width / 2, canvas.height / 2];//画布长宽
+            var rad = 10;
+            if (num < 15) {
+                rad = 7;
+            }
+            var rw = (canvas.width / 2 - 50) * rad / 10;//宽半径
+            var rh = (canvas.height / 2 - 50) * rad / 10;//高半径
+            for (var i = 0; i < num; i++) {
+                var l = Math.random() * (2 * rw) + (oval[0] - rw);
+                var h = Math.random() * (2 * rh) + (oval[1] - rh);
+                if (checkOverlap(circleList, l, h)) {
+                    i--;
+                    if (checkTime++ >= checkTimeMax) {
+                        redrawTime++;
+                        if (redrawTime >= redrawTimeMax) {
+                            alert("您输入的数字" + num + "太大，请输入较小的数字");
+                            return [];
+                        }
+                        return generateRandomPoistions(num);
+                    }
+                    continue;
+                }
+                checkTime = 0;
+                circleList.push({ cl: l, ct: h });
+            };
+            return circleList;
+        }
+
+        //绘制实心圆
+        function drawCircle(l, t) {
+            var cxt = canvas.getContext("2d");
+            cxt.beginPath();
+            cxt.arc(l, t, circleRadius, 0, 360, false);
+            cxt.fillStyle = "red";//填充颜色,默认是黑色
+            cxt.fill();//画实心圆
+            cxt.closePath();
+        }
+
+        //检测重叠
+        function checkOverlap(circleList, l, t) {
+            for (var x in circleList) {
+                var xdiff = l - circleList[x].cl;// 计算两个点的横坐标之差
+                var ydiff = t - circleList[x].ct;// 计算两个点的纵坐标之差
+                var gap = Math.pow((xdiff * xdiff + ydiff * ydiff), 0.5);
+                if (gap < circleRadius * 2 + minGap) return true;
+            }
+            return false;
+        }
+
+    </script>
+</body>
+</html>
