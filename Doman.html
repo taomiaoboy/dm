@@ -131,6 +131,11 @@
             $("#myCanvas").click(function () {
                 //drawSum();
             });
+			
+			//页面高度超过设备可见高度时，阻止掉touchmove事件
+			document.body.addEventListener('touchmove', function (event) {
+				event.preventDefault();
+			}, false);
         });
 
         //重置工作区高宽
@@ -229,6 +234,10 @@
 			clearCanvas();
 			drawSumTxt(sumTxt);
             drawCircles(sumNumList[sumNum++]);
+			
+			if (sumNum == sumNumList.length) {
+				setTimeout('drawSum()',1500);
+			}
 			setTimeout('drawSum()',1000);
         }
 		
@@ -246,6 +255,14 @@
 			ctx.font = "27px Courier New";
 			ctx.fillStyle = "blue";
 			ctx.fillText(sumTxt, 10, 20);
+		}
+
+		//绘制算数文字
+		function drawInfoTxt(info){
+			var ctx = canvas.getContext("2d");
+			ctx.font = "27px Courier New";
+			ctx.fillStyle = "red";
+			ctx.fillText(info, 10, 60);
 		}
 
         //绘制num个实心圆
@@ -278,7 +295,8 @@
                     if (checkTime++ >= checkTimeMax) {
                         redrawTime++;
                         if (redrawTime >= redrawTimeMax) {
-                            alert("您输入的数字" + num + "太大，请输入较小的数字");
+                            //alert("您输入的数字" + num + "太大，请输入较小的数字");
+							drawInfoTxt("您输入的数字" + num + "太大，请输入较小的数字");
                             return [];
                         }
                         return generateRandomPoistions(num);
