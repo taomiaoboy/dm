@@ -232,13 +232,14 @@
 				}
 			}
 			clearCanvas();
-			drawSumTxt(sumTxt);
+			drawSumTxt(sumTxt, sumNum);
             drawCircles(sumNumList[sumNum++]);
 			
 			if (sumNum == sumNumList.length) {
 				setTimeout('drawSum()',1500);
+			}else{
+				setTimeout('drawSum()',1000);	
 			}
-			setTimeout('drawSum()',1000);
         }
 		
 		//清屏
@@ -250,11 +251,31 @@
 		}
 		
 		//绘制算数文字
-		function drawSumTxt(sumTxt){
+		function drawSumTxt(sumTxt, sumNum){
 			var ctx = canvas.getContext("2d");
 			ctx.font = "27px Courier New";
-			ctx.fillStyle = "blue";
-			ctx.fillText(sumTxt, 10, 20);
+			var nums = sumTxt.split(/\+|-|\*|\/|=/);
+			var optsTemp = sumTxt.split(/\d|\./);
+			var opts = [];
+			for (var i in optsTemp) {
+				if (optsTemp[i] != "") {
+					opts.push(optsTemp[i]);
+				}
+			}
+			var wmw = 0;
+			for (var j = 0; j < nums.length; j++) {
+				ctx.fillStyle = "gray";
+				if( j == sumNum){
+					ctx.fillStyle = "black";
+				}
+				ctx.fillText(nums[j], 10 + wmw, 20);
+				ctx.fillStyle = "gray";
+				wmw = wmw + ctx.measureText(nums[j]).width;
+				if(j < nums.length - 1){
+					ctx.fillText(opts[j], 10 + wmw, 20);
+					wmw = wmw + ctx.measureText(opts[j]).width
+				}
+			}
 		}
 
 		//绘制算数文字
