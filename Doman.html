@@ -15,8 +15,12 @@
 </head>
 <body>
     <div class="container">
-        <div id="divSums" calss="row">
+        <div id="divSums" class="row">
 			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<a href="javascript:window.location='Home.html'"> 
+					<span class="glyphicon glyphicon-home"></span> 
+					首页 
+				</a>
 				<div>
 					<h4>每行输入一道题算术题</h4>
 				</div>
@@ -26,6 +30,11 @@
 			    <div class="checkbox">
 					<label>
 						<input id="cbComputeType" type="checkbox" value="1" checked="checked"/>顺序计算 
+					</label>
+				</div>
+			    <div class="checkbox">
+					<label>
+						<input id="cbSimpleFlash" type="checkbox" value="1"/>简闪 
 					</label>
 				</div>
 			</div>
@@ -126,7 +135,11 @@
 				sumNum = 0;
 				$("#divSums").hide();
 				$("#myCanvas").show();
-                drawSum();
+				if($("#cbSimpleFlash").get(0).checked){
+					drawSumSimple();
+				}else{	
+					drawSum();
+				}
             });
 
             //画布点击事件，切换实心圆
@@ -148,7 +161,7 @@
             canvas.width = ww;
             canvas.height = wh - 10;
 			
-			circleRadius = (ww < wh ? ww : wh) / 20;
+			circleRadius = (ww < wh ? ww : wh) / 25;
         }
 
 		//设置按钮大小
@@ -233,8 +246,8 @@
 					}
 				}
 				clearCanvas();
-				drawSumTxt(sumTxt, sumNum);
-				setTimeout('drawSum()',800);
+				drawSumTxt(sumTxt);
+				setTimeout('drawSum()',800);//空白题目亮0.8秒
 				return;
 			}
 			clearCanvas();
@@ -242,22 +255,65 @@
             drawCircles(sumNumList[sumNum++]);
 			
 			if (sumNum == sumNumList.length) {
-				setTimeout('drawSum()',1500);
+				setTimeout('drawSum()',1500);//最后一个数字亮1.5秒
 			}else{
-				setTimeout('drawSum()',1000);	
+				setTimeout('drawSum()',1000);//数字亮1秒
 			}
         }
+		
+        //绘制简闪数学表达式
+		function drawSumSimple(){
+			if (sumNum == sumNumList.length) {
+				if (sumTxtNum == sumTxtList.length) {
+					$("#myCanvas").hide();
+					$("#divSums").show();
+					sumTxtNum = 0;
+					sumTxt = "";
+					sumNumList = [];
+					sumNum = 0;
+					clearCanvas();
+					return;
+				}
+				sumNumList = [];
+				sumNum = 0;
+				sumTxt = sumTxtList[sumTxtNum++];
+				var sumNodes = sumTxt.split(/\+|-|\*|\/|=/);
+				for (var n in sumNodes) {
+					var node = sumNodes[n];
+					if (!isNaN(node)) {
+						sumNumList.push(parseInt(node));
+					}
+				}
+				clearCanvas();
+				drawSumTxt(sumTxt);
+				setTimeout('drawSumSimple()',800);//空白题目亮0.8秒
+				return;
+			}
+			clearCanvas();
+			if(sumNum == sumNumList.length - 1){
+				drawSumTxt(sumTxt, sumNum);
+				drawCircles(sumNumList[sumNum++]);
+				setTimeout('drawSumSimple()',1500);
+			}else{
+				drawSumTxt(sumTxt, sumNum++);
+				setTimeout('drawSumSimple()',800);
+			}
+		}
 		
 		//清屏
 		function clearCanvas(){
             //canvas清除屏幕
             //canvas.width = canvas.width;
             var context = canvas.getContext("2d");
+			context.fillStyle="#eee";
             context.clearRect(0, 0, canvas.width, canvas.height);
 		}
 		
 		//绘制算数文字
-		function drawSumTxt(sumTxt, sumNum){
+		function drawSumTxt(sumTxt, sumNo){
+			if(sumNo == undefined){
+				sumNo = -1;
+			}
 			var ctx = canvas.getContext("2d");
 			ctx.font = "27px Courier New";
 			var nums = sumTxt.split(/\+|-|\*|\/|=/);
@@ -271,7 +327,7 @@
 			var wmw = 0;
 			for (var j = 0; j < nums.length; j++) {
 				ctx.fillStyle = "gray";
-				if( j == sumNum){
+				if( j == sumNo){
 					ctx.fillStyle = "black";
 				}
 				ctx.fillText(nums[j], 10 + wmw, 20);
@@ -340,7 +396,7 @@
             var cxt = canvas.getContext("2d");
             cxt.beginPath();
             cxt.arc(l, t, circleRadius, 0, 360, false);
-            cxt.fillStyle = "red";//填充颜色,默认是黑色
+            cxt.fillStyle = "#f22";//填充颜色,默认是红色
             cxt.fill();//画实心圆
             cxt.closePath();
         }
