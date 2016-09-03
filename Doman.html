@@ -16,29 +16,25 @@
 <body>
     <div class="container">
         <div id="divSums" class="row">
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				<a href="javascript:window.location='Home.html'"> 
 					<span class="glyphicon glyphicon-home"></span> 
 					首页 
 				</a>
-				<div>
-					<h4>每行输入一道题算术题</h4>
-				</div>
-				<div>
-					<textarea type="text" id="txtSums" style="width: 100%; height: 100px; vertical-align: top;"></textarea>
-				</div>
+			    <div class="form-group">
+					<textarea type="text" id="txtSums" class="form-control" style="width: 100%; height: 100px; vertical-align: top;"></textarea>
+				</div> 
+				<div>每行输入一道题算术题</div>
 			    <div class="checkbox">
 					<label>
 						<input id="cbComputeType" type="checkbox" value="1" checked="checked"/>顺序计算 
 					</label>
-				</div>
-			    <div class="checkbox">
-					<label>
+					<label class="pull-right">
 						<input id="cbSimpleFlash" type="checkbox" value="1"/>简闪 
 					</label>
 				</div>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div id="btnContainer" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 				<table class="numInput">
 					<tr>
 						<td><button type="button" onclick="inputNum('7');" class="btnNumber btn btn-default">7</button></td>
@@ -65,7 +61,9 @@
 						<td><button type="button" onclick="inputNum('/');" class="btnNumber btn btn-default">/</button></td>
 					<tr>
 					<tr>
-						<td colspan="2"><button type="button" onclick="inputNum('Cle');" class="btn btn-info" style="width: 100%; height: 50px; margin-top: 10px; margin-right:3px;">Cle</button></td>
+						<td colspan="2">
+							<button type="button" onclick="inputNum('Cle');" class="btn btn-info" style="width: 100%; height: 50px; margin-top: 10px; margin-right:3px;">Cle</button>
+						</td>
 						<td colspan="2">
 							<button type="button" id="btnBegin" class="btn btn-primary" style="width: 100%; height: 50px; margin-top: 10px; margin-left:3px;">开始</button>
 						</td>
@@ -93,6 +91,7 @@
         var checkTimeMax = 100;//连续检测重叠次数
         var redrawTime = 0;//重新绘制图片次数
         var redrawTimeMax = 10;//重新绘制图片次数
+		var stopFlash = false;//是否终止闪卡
 
         $(function () {
 
@@ -125,6 +124,7 @@
 
             //开始按钮
             $("#btnBegin").click(function () {
+				stopFlash = false;
                 var sumTxt = $("#txtSums").val();
                 if (sumTxt == '') {
                     alert("请输入算术题，每行输入一道题");
@@ -147,6 +147,11 @@
                 //drawSum();
             });
 			
+			//双击画布事件
+            $("#myCanvas").dblclick(function () {
+                stopFlash = true;
+            });
+			
 			//页面高度超过设备可见高度时，阻止掉touchmove事件
 			document.body.addEventListener('touchmove', function (event) {
 				event.preventDefault();
@@ -167,10 +172,12 @@
 		//设置按钮大小
 		function resizeButtons(){
 			var ww = $(window).width();
-			var bw = (ww - 30) / 4 - 20;
+			var bw = (ww - 30) / 8 - 20;
 			$(".btnNumber").each(function(){
 				$(this).css({padding:0, margin:"3px"}).width(bw).height(bw);
 			});
+			
+			$("#txtSums").height($("#btnContainer").height() - 95);
 		}
 		
         //输入算数
@@ -221,18 +228,17 @@
                 return eval(sumTxt);
             }
         }
-
+		
         //绘制数学表达式
         function drawSum() {
+			//终止闪卡
+			if(stopFlash){
+				doStopFlash();
+				return;
+			}
 			if (sumNum == sumNumList.length) {
 				if (sumTxtNum == sumTxtList.length) {
-					$("#myCanvas").hide();
-					$("#divSums").show();
-					sumTxtNum = 0;
-					sumTxt = "";
-					sumNumList = [];
-					sumNum = 0;
-					clearCanvas();
+					doStopFlash();
 					return;
 				}
 				sumNumList = [];
@@ -261,6 +267,17 @@
 			}
         }
 		
+		//终止闪卡
+		function doStopFlash(){
+			$("#myCanvas").hide();
+			$("#divSums").show();
+			sumTxtNum = 0;
+			sumTxt = "";
+			sumNumList = [];
+			sumNum = 0;
+			clearCanvas();
+		}
+
         //绘制简闪数学表达式
 		function drawSumSimple(){
 			if (sumNum == sumNumList.length) {
@@ -338,14 +355,6 @@
 					wmw = wmw + ctx.measureText(opts[j]).width
 				}
 			}
-		}
-
-		//绘制算数文字
-		function drawInfoTxt(info){
-			var ctx = canvas.getContext("2d");
-			ctx.font = "27px Courier New";
-			ctx.fillStyle = "red";
-			ctx.fillText(info, 10, 60);
 		}
 
         //绘制num个实心圆
