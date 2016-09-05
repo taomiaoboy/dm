@@ -14,61 +14,69 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="divSums" class="row">
-			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-				<a href="javascript:window.location='Home.html'"> 
+    <div class="container" id="divSums">
+		<div class="panel panel-info">
+			<div class="panel-heading" style="height:38px;">
+				<h3 class="panel-title pull-left">乐果 闪卡教学</h3>
+				<a href="javascript:window.location='Home.html'" class="pull-right button-clear"> 
 					<span class="glyphicon glyphicon-home"></span> 
 					首页 
 				</a>
-			    <div class="form-group">
-					<textarea type="text" id="txtSums" class="form-control" style="width: 100%; height: 100px; vertical-align: top;"></textarea>
-				</div> 
-				<div>每行输入一道题算术题</div>
-			    <div class="checkbox">
-					<label>
-						<input id="cbComputeType" type="checkbox" value="1" checked="checked"/>顺序计算 
-					</label>
-					<label class="pull-right">
-						<input id="cbSimpleFlash" type="checkbox" value="1"/>简闪 
-					</label>
-				</div>
+				<div></div>
 			</div>
-			<div id="btnContainer" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-				<table class="numInput">
-					<tr>
-						<td><button type="button" onclick="inputNum('7');" class="btnNumber btn btn-default">7</button></td>
-						<td><button type="button" onclick="inputNum('8');" class="btnNumber btn btn-default">8</button></td>
-						<td><button type="button" onclick="inputNum('9');" class="btnNumber btn btn-default">9</button></td>
-						<td><button type="button" onclick="inputNum('+');" class="btnNumber btn btn-default">+</button></td>
-					<tr>
-					<tr>
-						<td><button type="button" onclick="inputNum('4');" class="btnNumber btn btn-default">4</button></td>
-						<td><button type="button" onclick="inputNum('5');" class="btnNumber btn btn-default">5</button></td>
-						<td><button type="button" onclick="inputNum('6');" class="btnNumber btn btn-default">6</button></td>
-						<td><button type="button" onclick="inputNum('-');" class="btnNumber btn btn-default">-</button></td>
-					<tr>
-					<tr>
-						<td><button type="button" onclick="inputNum('1');" class="btnNumber btn btn-default">1</button></td>
-						<td><button type="button" onclick="inputNum('2');" class="btnNumber btn btn-default">2</button></td>
-						<td><button type="button" onclick="inputNum('3');" class="btnNumber btn btn-default">3</button></td>
-						<td><button type="button" onclick="inputNum('*');" class="btnNumber btn btn-default">*</button></td>
-					<tr>
-					<tr>
-						<td><button type="button" onclick="inputNum('0');" class="btnNumber btn btn-default">0</button></td>
-						<td><button type="button" onclick="inputNum('\n');" class="btnNumber btn btn-default">Ent</button></td>
-						<td><button type="button" onclick="inputNum('=');" class="btnNumber btn btn-default">=</button></td>
-						<td><button type="button" onclick="inputNum('/');" class="btnNumber btn btn-default">/</button></td>
-					<tr>
-					<tr>
-						<td colspan="2">
-							<button type="button" onclick="inputNum('Cle');" class="btn btn-info" style="width: 100%; height: 50px; margin-top: 10px; margin-right:3px;">Cle</button>
-						</td>
-						<td colspan="2">
-							<button type="button" id="btnBegin" class="btn btn-primary" style="width: 100%; height: 50px; margin-top: 10px; margin-left:3px;">开始</button>
-						</td>
-					<tr>
-				</table>				
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+						<div class="form-group">
+							<textarea type="text" id="txtSums" class="form-control" style="width: 100%; height: 100px; vertical-align: top;"></textarea>
+						</div> 
+						<div>每行输入一道题算术题</div>
+						<div class="checkbox">
+							<label>
+								<input id="cbComputeType" type="checkbox" value="1" checked="checked"/>顺序计算 
+							</label>
+							<label class="pull-right">
+								<input id="cbSimpleFlash" type="checkbox" value="1"/>简闪 
+							</label>
+						</div>
+					</div>
+					<div id="btnContainer" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+						<table class="numInput">
+							<tr>
+								<td><button type="button" onclick="inputNum('7');" class="btnNumber btn btn-default">7</button></td>
+								<td><button type="button" onclick="inputNum('8');" class="btnNumber btn btn-default">8</button></td>
+								<td><button type="button" onclick="inputNum('9');" class="btnNumber btn btn-default">9</button></td>
+								<td><button type="button" onclick="inputNum('+');" class="btnNumber btn btn-default">+</button></td>
+							</tr>
+							<tr>
+								<td><button type="button" onclick="inputNum('4');" class="btnNumber btn btn-default">4</button></td>
+								<td><button type="button" onclick="inputNum('5');" class="btnNumber btn btn-default">5</button></td>
+								<td><button type="button" onclick="inputNum('6');" class="btnNumber btn btn-default">6</button></td>
+								<td><button type="button" onclick="inputNum('-');" class="btnNumber btn btn-default">-</button></td>
+							</tr>
+							<tr>
+								<td><button type="button" onclick="inputNum('1');" class="btnNumber btn btn-default">1</button></td>
+								<td><button type="button" onclick="inputNum('2');" class="btnNumber btn btn-default">2</button></td>
+								<td><button type="button" onclick="inputNum('3');" class="btnNumber btn btn-default">3</button></td>
+								<td><button type="button" onclick="inputNum('*');" class="btnNumber btn btn-default">*</button></td>
+							</tr>
+							<tr>
+								<td><button type="button" onclick="inputNum('0');" class="btnNumber btn btn-default">0</button></td>
+								<td><button type="button" onclick="inputNum('\n');" class="btnNumber btn btn-default">Ent</button></td>
+								<td><button type="button" onclick="inputNum('=');" class="btnNumber btn btn-default">=</button></td>
+								<td><button type="button" onclick="inputNum('/');" class="btnNumber btn btn-default">/</button></td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<button type="button" onclick="inputNum('Cle');" class="btn btn-info" style="width: 100%; height: 50px; margin-top: 10px; margin-right:3px;">Cle</button>
+								</td>
+								<td colspan="2">
+									<button type="button" id="btnBegin" class="btn btn-primary" style="width: 100%; height: 50px; margin-top: 10px; margin-left:3px;">开始</button>
+								</td>
+							</tr>
+						</table>				
+					</div>
+				</div>
 			</div>
 		</div>
     </div>
