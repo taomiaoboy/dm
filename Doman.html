@@ -100,6 +100,8 @@
         var redrawTime = 0;//重新绘制图片次数
         var redrawTimeMax = 10;//重新绘制图片次数
 		var stopFlash = false;//是否终止闪卡
+		var isSimpleFlash = false;//是否简闪
+		var isReadSimpleFlash = false;//是否口述简闪
 
         $(function () {
 
@@ -143,8 +145,10 @@
 				sumNum = 0;
 				$("#divSums").hide();
 				$("#myCanvas").show();
-				if($("#cbSimpleFlash").get(0).checked){
+				isSimpleFlash = $("#cbSimpleFlash").get(0).checked;
+				if(isSimpleFlash){
 					drawSumSimple();
+					window.addEventListener('keydown', doKeyDown, true); 
 				}else{	
 					drawSum();
 				}
@@ -152,9 +156,13 @@
 
             //画布点击事件，切换实心圆
             $("#myCanvas").click(function () {
-                //drawSum();
+				if(isSimpleFlash){
+					drawSumSimple();
+				}else{	
+					drawSum();
+				}
             });
-			
+            			
 			//双击画布事件
             $("#myCanvas").dblclick(function () {
                 stopFlash = true;
@@ -165,6 +173,14 @@
 				event.preventDefault();
 			}, false);
         });
+		
+		function doKeyDown(){
+			if(isSimpleFlash){
+				drawSumSimple();
+			}else{	
+				drawSum();
+			}
+		}
 
         //重置工作区高宽
         function resizeLayout() {
@@ -296,12 +312,15 @@
 					sumTxt = "";
 					sumNumList = [];
 					sumNum = 0;
+					isReadSimpleFlash = false;
 					clearCanvas();
+					window.removeEventListener('keydown', doKeyDown, true); 
 					return;
 				}
 				sumNumList = [];
 				sumNum = 0;
 				sumTxt = sumTxtList[sumTxtNum++];
+				isReadSimpleFlash = sumTxt.indexOf("=") < 0;
 				var sumNodes = sumTxt.split(/\+|-|\*|\/|=/);
 				for (var n in sumNodes) {
 					var node = sumNodes[n];
@@ -311,17 +330,23 @@
 				}
 				clearCanvas();
 				drawSumTxt(sumTxt);
-				setTimeout('drawSumSimple()',800);//空白题目亮0.8秒
+				if(!isReadSimpleFlash){
+					setTimeout('drawSumSimple()',800);//空白题目亮0.8秒
+				}
 				return;
 			}
 			clearCanvas();
 			if(sumNum == sumNumList.length - 1){
 				drawSumTxt(sumTxt, sumNum);
 				drawCircles(sumNumList[sumNum++]);
-				setTimeout('drawSumSimple()',1500);
+				if(!isReadSimpleFlash){
+					setTimeout('drawSumSimple()',1500);
+				}
 			}else{
 				drawSumTxt(sumTxt, sumNum++);
-				setTimeout('drawSumSimple()',800);
+				if(!isReadSimpleFlash){
+					setTimeout('drawSumSimple()',800);
+				}
 			}
 		}
 		
@@ -429,6 +454,15 @@
             return false;
         }
 
+		//绘制汉字
+		function drawInfoTxt(info){
+			var ctx = canvas.getContext("2d");
+			ctx.font = "27px Courier New";
+			ctx.fillStyle = "#f33";
+			var infow = ctx.measureText(info).width;
+			//var infoh = ctx.measureText(info).height;
+			ctx.fillText(info, (canvas.width - infow) / 2, canvas.height / 2);
+		}
     </script>
 </body>
 </html>
