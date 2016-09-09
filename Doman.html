@@ -86,7 +86,9 @@
 	<!-- 添加canvas标签，并加上红色边框以便于在页面上查看 -->
 	<canvas id="myCanvas" style="display: none;">您的浏览器不支持canvas标签。
 	</canvas>
-	<audio id="audio" src="source/audio.mp3" ></audio>
+	<audio id="audio" src="source/count_audio.wav" ></audio>
+	<audio id="audio2" src="source/count_audio2.wav" ></audio>
+	<audio id="audio3" src="source/count_audio3.wav" ></audio>
     <script type="text/javascript">
 
 
@@ -406,7 +408,7 @@
 				if(optTemp == ""){
 					playAudio(numTemp);
 				}else{
-					playAudio(numTemp);
+					playAudio(optTemp);
 					setTimeout("playAudio(" + numTemp + ")", 500);
 				}
 			}
@@ -414,18 +416,36 @@
 
 		//播放声音:0,1-10和+-X/=
 		function playAudio(n){
-			var audio = document.getElementById("audio");
-			var allTime = audio.duration;
-			audio.currentTime = ( n / 10 ) * allTime;
-			audio.play();
-			setTimeout("pauseAudio()", 500);
+			if(isNaN(n)){
+				var n3 = 0;
+				if(n=="+"){n3 = 0;}
+				else if(n=="-"){n3 = 1;}
+				else if(n=="*"){n3 = 2;}
+				else if(n=="/"){n3 = 3;}
+				else if(n=="="){n3 = 4;}
+				var audio3 = document.getElementById("audio3");
+				audio3.currentTime = n3;
+				audio3.play();
+				setTimeout("document.getElementById('audio3').pause()", 600);
+			}
+			if(n > 0 && n < 10){
+				var audio = document.getElementById("audio");
+				audio.currentTime = n;
+				audio.play();
+				setTimeout("document.getElementById('audio').pause()", 500);
+				return;
+			}else if(n >= 10 && n < 100){
+				var n1 = n % 10;
+				var n2 = parseInt(n / 10);
+				var audio2 = document.getElementById("audio2");
+				audio2.currentTime = n2;
+				audio2.play();
+				setTimeout("document.getElementById('audio2').pause()", 700);
+				setTimeout("playAudio(" + n1 +")", 500);
+				return;
+			}
 		}
 		
-		//暂停播放
-		function pauseAudio(){
-			audio.pause();
-		}
-
         //绘制num个实心圆
         function drawCircles(num) {
             //生成实心圆随机位置
