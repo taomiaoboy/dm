@@ -106,6 +106,7 @@
 		var stopFlash = false;//是否终止闪卡
 		var isSimpleFlash = false;//是否简闪
 		var isReadSimpleFlash = false;//是否口述简闪
+		var isAudoRadio = false;//是否播放语音
 
         $(function () {
 
@@ -156,6 +157,7 @@
 				}else{	
 					drawSum();
 				}
+				isAudoRadio = $("#cbAudoRadio").get(0).checked;
             });
 
             //画布点击事件，切换实心圆
@@ -288,7 +290,6 @@
 			drawSumTxt(sumTxt, sumNum);
 			var num = sumNumList[sumNum++];
 			drawCircles(num);
-			playAudio(num);
 			
 			if (sumNum == sumNumList.length) {
 				setTimeout('drawSum()',1500);//最后一个数字亮1.5秒
@@ -346,7 +347,6 @@
 				drawSumTxt(sumTxt, sumNum);
 				var num = sumNumList[sumNum++];
 				drawCircles(num);
-				playAudio(num);
 				if(!isReadSimpleFlash){
 					setTimeout('drawSumSimple()',1500);
 				}
@@ -382,11 +382,17 @@
 					opts.push(optsTemp[i]);
 				}
 			}
+			var numTemp = 0;
+			var optTemp = "";
 			var wmw = 0;
 			for (var j = 0; j < nums.length; j++) {
 				ctx.fillStyle = "gray";
 				if( j == sumNo){
 					ctx.fillStyle = "black";
+					numTemp = nums[j];
+					if(j > 0){
+						optTemp = opts[j - 1];
+					}
 				}
 				ctx.fillText(nums[j], 10 + wmw, 20);
 				ctx.fillStyle = "gray";
@@ -394,6 +400,14 @@
 				if(j < nums.length - 1){
 					ctx.fillText(opts[j], 10 + wmw, 20);
 					wmw = wmw + ctx.measureText(opts[j]).width
+				}
+			}
+			if(isAudoRadio && sumNo >= 0){
+				if(optTemp == ""){
+					playAudio(numTemp);
+				}else{
+					playAudio(numTemp);
+					setTimeout("playAudio(" + numTemp + ")", 500);
 				}
 			}
 		}
