@@ -35,6 +35,9 @@
 							<label>
 								<input id="cbComputeType" type="checkbox" value="1" checked="checked"/>顺序计算 
 							</label>
+							<label>
+								<input id="cbAudoRadio" type="checkbox" value="1"/>播放语音
+							</label>
 							<label class="pull-right">
 								<input id="cbSimpleFlash" type="checkbox" value="1"/>简闪 
 							</label>
@@ -83,6 +86,7 @@
 	<!-- 添加canvas标签，并加上红色边框以便于在页面上查看 -->
 	<canvas id="myCanvas" style="display: none;">您的浏览器不支持canvas标签。
 	</canvas>
+	<audio id="audio" src="source/audio.mp3" ></audio>
     <script type="text/javascript">
 
 
@@ -227,7 +231,7 @@
             }
             $("#txtSums").val($("#txtSums").val() + v);
         }
-
+		
         //计算算数
         function computeSum(sumTxt, type) {
             if (type != undefined && type == 2) {
@@ -282,7 +286,9 @@
 			}
 			clearCanvas();
 			drawSumTxt(sumTxt, sumNum);
-            drawCircles(sumNumList[sumNum++]);
+			var num = sumNumList[sumNum++];
+			drawCircles(num);
+			playAudio(num);
 			
 			if (sumNum == sumNumList.length) {
 				setTimeout('drawSum()',1500);//最后一个数字亮1.5秒
@@ -338,7 +344,9 @@
 			clearCanvas();
 			if(sumNum == sumNumList.length - 1){
 				drawSumTxt(sumTxt, sumNum);
-				drawCircles(sumNumList[sumNum++]);
+				var num = sumNumList[sumNum++];
+				drawCircles(num);
+				playAudio(num);
 				if(!isReadSimpleFlash){
 					setTimeout('drawSumSimple()',1500);
 				}
@@ -388,6 +396,20 @@
 					wmw = wmw + ctx.measureText(opts[j]).width
 				}
 			}
+		}
+
+		//播放声音:0,1-10和+-X/=
+		function playAudio(n){
+			var audio = document.getElementById("audio");
+			var allTime = audio.duration;
+			audio.currentTime = ( n / 10 ) * allTime;
+			audio.play();
+			setTimeout("pauseAudio()", 500);
+		}
+		
+		//暂停播放
+		function pauseAudio(){
+			audio.pause();
 		}
 
         //绘制num个实心圆
